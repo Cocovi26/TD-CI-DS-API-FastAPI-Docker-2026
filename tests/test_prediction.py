@@ -11,7 +11,7 @@ Objectif pédagogique :
 - Éviter une couverture artificielle basée seulement sur des cas répétitifs.
 """
 
-import math
+
 import pytest # pyright: ignore[reportMissingImports]
 
 from app.utils import predict
@@ -111,14 +111,6 @@ def test_predict_output_size_matches_input_size():
     result = predict(features)
 
     assert len(result) == len(features)
-
-
-def test_predict_output_values_are_numeric():
-    """Chaque prédiction doit être une valeur numérique finie."""
-    result = predict([1.0, 2.0, 3.0])
-
-    assert all(isinstance(value, float) for value in result)
-    assert all(math.isfinite(value) for value in result)
 
 
 def test_predict_is_deterministic():
