@@ -5,7 +5,7 @@ from app.main import app
 
 @pytest.mark.anyio
 async def test_predict_success():
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(app="app", base_url="http://test") as client:
         resp = await client.post("/predict", json={
         "features": [3.5, 1.2, 4.9]
     })
@@ -14,7 +14,7 @@ async def test_predict_success():
 
 @pytest.mark.anyio
 async def test_predict_unprocessable_entity():
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(app="app", base_url="http://test") as client:
         resp = await client.post("/predict", json={
         "feature1": 3.5,
         "feature2": 1.2,
