@@ -1,23 +1,38 @@
-# tests/test_api.py
 import pytest
-from httpx import AsyncClient, ASGITransport
-from app.main import app
+from fastapi.testclient import TestClient
 
-@pytest.mark.anyio
-async def test_predict_success():
-    async with AsyncClient( transport=ASGITransport(app=app), base_url="http://test") as client:
-        resp = await client.post("/predict", json={
-        "features": [3.5, 1.2, 4.9]
-    })
-    assert resp.status_code == 200
-    assert {"predictions": [7.0, 2.4, 9.8]} == resp.json()
+from app.main import app 
 
-@pytest.mark.anyio
-async def test_predict_unprocessable_entity():
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-        resp = await client.post("/predict", json={
-        "feature1": 3.5,
-        "feature2": 1.2,
-        "feature3": 4.9
-    })
-    assert resp.status_code == 422
+client = TestClient(app)
+
+ #Test 1
+def test_prediction_correcte():
+    payload = {"features": [1.0, 2.0, 3.0]}
+    response = client.post("/predict", json=payload)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert "predictions" in data
+   
+    assert data["predictions"] == [2.0, 4.0, 6.0]
+
+#Test 2
+def test_prediction_incorrecte():
+    payload = {"features": [1.0, 2.0, 3.0]}
+    response = client.post("/predict", json=payload)
+    
+    assert response.status_code == 200
+    data = response.json()
+  
+    assert data["predictions"] != [99.0, 99.0, 99.0]
+
+#Test 3 
+def test_prediction_json_incorrect():
+    # Missing the "features" key entirely, passing raw numbers instead
+    payload = {"wrong_key": [3.5, 1.2, 4.9]} 
+    response = client.post("/predict", json=payload)
+    
+    
+    assert response.status_code == 422
+
+
